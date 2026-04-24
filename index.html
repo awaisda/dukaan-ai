@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dukaan AI — Pakistani retail ke liye AI-powered smart inventory aur sales intelligence dashboard." />
+  <title>Dukaan AI — Smart Retail Intelligence System</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231DB584'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='700' font-family='monospace' fill='%23000'>D</text></svg>" />
+  <link rel="stylesheet" href="src/styles/main.css" />
+  <link rel="stylesheet" href="src/styles/components.css" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header" id="app-header"></header>
+
+  <!-- MOBILE BACKDROP -->
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+    <nav class="sidebar" id="app-sidebar"></nav>
+    <main class="main" id="app-main"></main>
+  </div>
+
+  <!-- SCRIPTS — load order matters -->
+  <script src="src/data/inventory.js"></script>
+  <script src="src/utils/helpers.js"></script>
+  <script src="src/components/header.js"></script>
+  <script src="src/components/sidebar.js"></script>
+  <script src="src/components/dashboard.js"></script>
+  <script src="src/components/inventory.js"></script>
+  <script src="src/components/forecast.js"></script>
+  <script src="src/components/loss.js"></script>
+  <script src="src/components/ai-chat.js"></script>
+  <script src="src/components/upload.js"></script>
+  <script src="src/utils/router.js"></script>
+  <script src="src/utils/charts.js"></script>
+  <script src="src/app.js"></script>
+
+</body>
+</html>
