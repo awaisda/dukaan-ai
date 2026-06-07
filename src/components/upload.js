@@ -3,10 +3,9 @@
  * CSV file upload panel with drag-drop, column mapping, preview, and localStorage
  */
 
-var _parsedRows    = [];   // raw CSV rows (array of objects keyed by header)
-var _csvHeaders    = [];   // original CSV headers
+var _parsedRows = [];
+var _csvHeaders = [];
 
-// Fields we need to map to
 var REQUIRED_FIELDS = [
   { key: 'name',    label: 'Product Name',       type: 'text' },
   { key: 'cat',     label: 'Category',            type: 'text' },
@@ -17,9 +16,6 @@ var REQUIRED_FIELDS = [
   { key: 'cost',    label: 'Cost Price (Rs)',      type: 'number' },
 ];
 
-/* ============================================================
-   PANEL RENDER
-   ============================================================ */
 function renderUploadPanel() {
   var el = document.getElementById('app-main');
   if (!el) return;
@@ -27,40 +23,39 @@ function renderUploadPanel() {
   el.innerHTML += `
     <div id="panel-upload" class="panel">
       <div class="page-title">Upload Data</div>
-      <div class="page-sub">Apni dukaan ki inventory CSV file upload karein — app usi data pe kaam karega</div>
+      <div class="page-sub">Upload your inventory CSV file — the app will work with your data</div>
 
-      <!-- Current data status -->
       <div id="upload-current-status"></div>
 
       <!-- Step 1: Drop zone -->
       <div class="form-card" id="upload-step1">
-        <div class="step-header"><span class="step-num">1</span> CSV File Choose karein ya Drop karein</div>
+        <div class="step-header"><span class="step-num">1</span> Choose or Drop a CSV File</div>
 
         <div class="drop-zone" id="drop-zone">
           <input type="file" id="csv-file-input" accept=".csv,text/csv" onchange="handleFileSelect(event)" />
           <span class="drop-icon">📂</span>
-          <div class="drop-title">CSV file yahan drop karein</div>
+          <div class="drop-title">Drop your CSV file here</div>
           <div class="drop-sub">
-            Ya click karein file choose karne ke liye<br>
+            Or click to choose a file<br>
             <span style="color:var(--text3);font-size:11px">Supported: .csv format only</span>
           </div>
         </div>
 
         <div class="upload-actions">
           <button class="btn-secondary" onclick="downloadSampleCSV()" style="flex:0 0 auto">
-            ⬇ Sample CSV Download
+            ⬇ Download Sample CSV
           </button>
           <span style="font-size:11px;color:var(--text3);align-self:center;padding-left:4px">
-            Pehli baar? Sample download karein aur format dekh lein.
+            First time? Download the sample to see the required format.
           </span>
         </div>
       </div>
 
       <!-- Step 2: Column Mapping -->
       <div class="form-card" id="upload-step2" style="display:none">
-        <div class="step-header"><span class="step-num">2</span> Columns Map karein</div>
+        <div class="step-header"><span class="step-num">2</span> Map Your Columns</div>
         <div style="font-size:12px;color:var(--text2);margin-bottom:14px">
-          Apni CSV ke column names yahan match karein. Auto-detect karne ki koshish ki gayi hai.
+          Match your CSV column names to the required fields. Auto-detection has been attempted.
         </div>
         <div class="mapping-grid" id="mapping-grid"></div>
         <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
@@ -75,21 +70,20 @@ function renderUploadPanel() {
         <div style="font-size:12px;color:var(--text2);margin-bottom:10px" id="preview-summary"></div>
         <div class="preview-table-wrap" id="preview-table-wrap"></div>
         <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn-primary" style="flex:1;min-width:140px" onclick="confirmUpload()">🚀 Apply & Use This Data</button>
+          <button class="btn-primary" style="flex:1;min-width:140px" onclick="confirmUpload()">🚀 Apply &amp; Use This Data</button>
           <button class="btn-secondary" onclick="goToStep(2)">← Back</button>
           <button class="btn-secondary" onclick="resetUpload()">✕ Cancel</button>
         </div>
       </div>
 
-      <!-- Sample format info -->
+      <!-- Format tip -->
       <div class="tip-box" style="margin-top:0">
-        <strong>CSV Format:</strong> Pehli row mein column headers honge. Baaki rows mein data.
-        Category ke liye use karein: <strong>Grocery | Beverage | Cosmetic | Detergent</strong>
+        <strong>CSV Format:</strong> First row must contain column headers. Remaining rows are your product data.
+        Recommended categories: <strong>Grocery | Beverage | Cosmetic | Detergent</strong>
       </div>
     </div>
   `;
 
-  // Setup drag-drop
   var zone = document.getElementById('drop-zone');
   zone.addEventListener('dragover',  function(e){ e.preventDefault(); zone.classList.add('drag-over'); });
   zone.addEventListener('dragleave', function(){ zone.classList.remove('drag-over'); });
@@ -103,9 +97,6 @@ function renderUploadPanel() {
   renderCurrentStatus();
 }
 
-/* ============================================================
-   STATUS BAR
-   ============================================================ */
 function renderCurrentStatus() {
   var el = document.getElementById('upload-current-status');
   if (!el) return;
@@ -118,14 +109,11 @@ function renderCurrentStatus() {
   } else {
     el.innerHTML = `<div class="upload-status" style="background:var(--blue-dim);border-color:rgba(77,157,224,0.25);color:var(--blue)">
       <span class="u-icon">ℹ️</span>
-      <span>Sample data use ho raha hai (${INVENTORY.length} products). Apni file upload karein.</span>
+      <span>Using sample data (${INVENTORY.length} products). Upload your own file to get started.</span>
     </div>`;
   }
 }
 
-/* ============================================================
-   FILE HANDLING
-   ============================================================ */
 function handleFileSelect(event) {
   var file = event.target.files[0];
   if (file) processFile(file);
@@ -133,10 +121,9 @@ function handleFileSelect(event) {
 
 function processFile(file) {
   if (!file.name.endsWith('.csv') && file.type !== 'text/csv') {
-    alert('Sirf .csv files support hoti hain. Excel file ko pehle CSV mein save karein.');
+    alert('Only .csv files are supported. Please save your Excel file as CSV first.');
     return;
   }
-
   var reader = new FileReader();
   reader.onload = function(e) {
     try {
@@ -144,7 +131,7 @@ function processFile(file) {
       _csvHeaders = result.headers;
       _parsedRows = result.rows;
       if (_parsedRows.length === 0) {
-        alert('CSV mein koi data nahi mila. File check karein.');
+        alert('No data found in the CSV. Please check the file and try again.');
         return;
       }
       buildMappingUI();
@@ -156,33 +143,24 @@ function processFile(file) {
   reader.readAsText(file);
 }
 
-/* ============================================================
-   CSV PARSER
-   ============================================================ */
 function parseCSV(text) {
   var lines = text.trim().split(/\r?\n/);
-  if (lines.length < 2) throw new Error('CSV mein at least 2 rows hongi chahiye (header + data)');
-
+  if (lines.length < 2) throw new Error('CSV must have at least 2 rows (header + data).');
   var headers = splitCSVLine(lines[0]);
-
   var rows = [];
   for (var i = 1; i < lines.length; i++) {
     var line = lines[i].trim();
     if (!line) continue;
     var vals = splitCSVLine(line);
     var row  = {};
-    headers.forEach(function(h, idx) {
-      row[h] = (vals[idx] || '').trim();
-    });
+    headers.forEach(function(h, idx) { row[h] = (vals[idx] || '').trim(); });
     rows.push(row);
   }
   return { headers: headers, rows: rows };
 }
 
 function splitCSVLine(line) {
-  var result = [];
-  var cur    = '';
-  var inQ    = false;
+  var result = [], cur = '', inQ = false;
   for (var i = 0; i < line.length; i++) {
     var c = line[i];
     if (c === '"') { inQ = !inQ; continue; }
@@ -193,13 +171,9 @@ function splitCSVLine(line) {
   return result;
 }
 
-/* ============================================================
-   COLUMN MAPPING UI
-   ============================================================ */
 function buildMappingUI() {
   var grid = document.getElementById('mapping-grid');
   if (!grid) return;
-
   grid.innerHTML = REQUIRED_FIELDS.map(function(field) {
     var autoMatch = autoDetect(field.key, _csvHeaders);
     var options   = _csvHeaders.map(function(h) {
@@ -217,58 +191,39 @@ function buildMappingUI() {
 
 function autoDetect(fieldKey, headers) {
   var synonyms = {
-    name:    ['name','product','item','product name','item name','naam'],
-    cat:     ['cat','category','type','qism'],
-    stock:   ['stock','qty','quantity','units','stock qty','miqdar'],
+    name:    ['name','product','item','product name','item name'],
+    cat:     ['cat','category','type'],
+    stock:   ['stock','qty','quantity','units','stock qty'],
     reorder: ['reorder','reorder level','min stock','minimum','reorder point'],
-    daily:   ['daily','daily sales','avg daily','per day','rozana','average daily'],
-    price:   ['price','selling price','sale price','sp','qeemat'],
-    cost:    ['cost','cost price','purchase price','cp','lagat'],
+    daily:   ['daily','daily sales','avg daily','per day','average daily'],
+    price:   ['price','selling price','sale price','sp'],
+    cost:    ['cost','cost price','purchase price','cp'],
   };
   var keys = (synonyms[fieldKey] || [fieldKey]).map(function(s){ return s.toLowerCase(); });
-  return headers.filter(function(h){
-    return keys.indexOf(h.toLowerCase()) !== -1;
-  })[0] || '';
+  return headers.filter(function(h){ return keys.indexOf(h.toLowerCase()) !== -1; })[0] || '';
 }
 
-/* ============================================================
-   PREVIEW
-   ============================================================ */
 function applyMapping() {
-  var mapping = {};
-  var missing = [];
+  var mapping = {}, missing = [];
   REQUIRED_FIELDS.forEach(function(f) {
     var sel = document.getElementById('map-' + f.key);
-    if (sel && sel.value) {
-      mapping[f.key] = sel.value;
-    } else {
-      missing.push(f.label);
-    }
+    if (sel && sel.value) { mapping[f.key] = sel.value; }
+    else { missing.push(f.label); }
   });
-
   if (missing.length > 0) {
-    alert('Ye columns map nahi hue:\n' + missing.join('\n') + '\n\nSabhi columns select karein.');
+    alert('The following columns were not mapped:\n' + missing.join('\n') + '\n\nPlease select all columns.');
     return;
   }
-
-  // Build preview data
   var preview = _parsedRows.slice(0, 5).map(function(row, i) {
     return {
-      id:      i + 1,
-      name:    row[mapping.name]    || '—',
-      cat:     row[mapping.cat]     || '—',
-      stock:   parseFloat(row[mapping.stock])   || 0,
-      reorder: parseFloat(row[mapping.reorder]) || 0,
-      daily:   parseFloat(row[mapping.daily])   || 0,
-      price:   parseFloat(row[mapping.price])   || 0,
-      cost:    parseFloat(row[mapping.cost])     || 0,
+      id: i+1, name: row[mapping.name]||'—', cat: row[mapping.cat]||'—',
+      stock: parseFloat(row[mapping.stock])||0, reorder: parseFloat(row[mapping.reorder])||0,
+      daily: parseFloat(row[mapping.daily])||0, price: parseFloat(row[mapping.price])||0,
+      cost:  parseFloat(row[mapping.cost])||0,
     };
   });
-
-  // Store mapping on window for confirm step
   window._uploadMapping = mapping;
 
-  // Render preview table
   var wrap = document.getElementById('preview-table-wrap');
   wrap.innerHTML = `<table class="preview-table">
     <thead><tr>
@@ -286,18 +241,14 @@ function applyMapping() {
   </table>`;
 
   document.getElementById('preview-summary').innerHTML =
-    `<strong style="color:var(--text)">${_parsedRows.length} rows</strong> found in CSV. Pehle 5 rows preview mein hain. Confirm karein toh app ka poora data replace ho jayega.`;
+    `<strong style="color:var(--text)">${_parsedRows.length} rows</strong> found in your CSV. Showing first 5 rows. Confirming will replace all current app data.`;
 
   goToStep(3);
 }
 
-/* ============================================================
-   CONFIRM / APPLY
-   ============================================================ */
 function confirmUpload() {
   var mapping = window._uploadMapping;
   if (!mapping) return;
-
   INVENTORY = _parsedRows.map(function(row, i) {
     return {
       id:      i + 1,
@@ -314,33 +265,6 @@ function confirmUpload() {
   saveInventory();
   refreshSidebarBadge();
 
-  // Refresh forecast dropdown and inputs
-  var fcProd = document.getElementById('fc-product');
-  if (fcProd) {
-    fcProd.innerHTML = INVENTORY.map(function(p){
-      return '<option value="' + p.id + '">' + p.name + '</option>';
-    }).join('');
-    syncForecastProduct(); // Bug 2 fix: auto-fill forecast inputs with new data
-  }
-
-  // Reset UI
-  _parsedRows = []; _csvHeaders = []; window._uploadMapping = null;
-  goToStep(1);
-  renderCurrentStatus();
-
-  alert('\u2705 Data successfully load ho gaya! ' + INVENTORY.length + ' products active hain.');
-  showPanel('dashboard');
-}
-
-/* ============================================================
-   RESET
-   ============================================================ */
-function confirmReset() {
-  if (!confirm('Default sample data pe wapas jaana chahte hain? Aapka uploaded data delete ho jayega.')) return;
-  resetInventory();
-  refreshSidebarBadge();
-
-  // Refresh forecast dropdown and inputs
   var fcProd = document.getElementById('fc-product');
   if (fcProd) {
     fcProd.innerHTML = INVENTORY.map(function(p){
@@ -349,6 +273,24 @@ function confirmReset() {
     syncForecastProduct();
   }
 
+  _parsedRows = []; _csvHeaders = []; window._uploadMapping = null;
+  goToStep(1);
+  renderCurrentStatus();
+  alert('\u2705 Data loaded successfully! ' + INVENTORY.length + ' products are now active.');
+  showPanel('dashboard');
+}
+
+function confirmReset() {
+  if (!confirm('Return to default sample data? Your uploaded data will be removed.')) return;
+  resetInventory();
+  refreshSidebarBadge();
+  var fcProd = document.getElementById('fc-product');
+  if (fcProd) {
+    fcProd.innerHTML = INVENTORY.map(function(p){
+      return '<option value="' + p.id + '">' + p.name + '</option>';
+    }).join('');
+    syncForecastProduct();
+  }
   renderCurrentStatus();
   goToStep(1);
 }
@@ -360,7 +302,6 @@ function resetUpload() {
   if (inp) inp.value = '';
 }
 
-/** Bug 3 fix: called by router each time upload panel is opened */
 function resetUploadState() {
   _parsedRows = []; _csvHeaders = []; window._uploadMapping = null;
   goToStep(1);
@@ -371,14 +312,11 @@ function resetUploadState() {
 
 function goToStep(n) {
   [1,2,3].forEach(function(i){
-    var el = document.getElementById('upload-step'+i);
+    var el = document.getElementById('upload-step' + i);
     if (el) el.style.display = (i === n ? '' : 'none');
   });
 }
 
-/* ============================================================
-   SAMPLE CSV DOWNLOAD
-   ============================================================ */
 function downloadSampleCSV() {
   var headers = 'Product Name,Category,Stock,Reorder Level,Avg Daily Sales,Selling Price,Cost Price';
   var rows = [

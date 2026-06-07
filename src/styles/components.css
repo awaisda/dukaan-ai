@@ -78,7 +78,9 @@
   color: var(--green);
   border-left-color: var(--green);
 }
-.nav-icon { font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
+.nav-icon { width: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: inherit; }
+.nav-item { transition: all 0.15s ease, padding-left 0.15s ease; }
+.nav-item.active { padding-left: 22px; }
 .nav-divider { height: 1px; background: var(--border); margin: 10px 12px; }
 .nav-data-badge {
   margin-left: auto;
@@ -91,11 +93,16 @@
 .metric-card {
   background: var(--bg2);
   border: 1px solid var(--border);
+  border-top: 2px solid transparent;
   border-radius: var(--radius-lg);
   padding: 18px 16px;
   transition: border-color var(--ease), transform var(--ease), box-shadow var(--ease);
   position: relative; overflow: hidden;
 }
+.metric-card.accent-green { border-top-color: var(--green); }
+.metric-card.accent-amber { border-top-color: var(--amber); }
+.metric-card.accent-red   { border-top-color: var(--red); }
+.metric-card.accent-blue  { border-top-color: var(--blue); }
 .metric-card::before {
   content: '';
   position: absolute; inset: 0;
@@ -452,3 +459,271 @@
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 700; flex-shrink: 0;
 }
+
+/* ---- INVENTORY SEARCH / FILTER / SORT ---- */
+.inv-controls { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+.inv-search-wrap { flex: 1; }
+.inv-search {
+  width: 100%; padding: 9px 14px;
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: var(--radius); color: var(--text);
+  font-size: 13px; outline: none; transition: border-color var(--ease);
+}
+.inv-search:focus { border-color: var(--green); }
+.inv-search::placeholder { color: var(--text3); }
+.inv-sort {
+  padding: 9px 12px; background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: var(--radius); color: var(--text2); font-size: 12px;
+  outline: none; cursor: pointer; transition: border-color var(--ease); flex-shrink: 0;
+  font-family: var(--font);
+}
+.inv-sort:focus { border-color: var(--green); }
+.inv-sort option { background: var(--bg2); }
+
+/* ---- CATEGORY FILTER PILLS ---- */
+.cat-filter { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.cat-pill {
+  padding: 4px 12px; font-size: 11px; font-weight: 500;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 20px; color: var(--text2);
+  cursor: pointer; transition: all var(--ease); font-family: var(--font);
+}
+.cat-pill:hover { border-color: var(--text3); color: var(--text); }
+.cat-pill.active { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+
+/* ---- SKELETON LOADER ---- */
+.skeleton-line {
+  height: 14px; background: var(--bg3);
+  border-radius: 4px; width: 100%;
+  animation: shimmer 1.2s ease infinite;
+}
+@keyframes shimmer {
+  0%,100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ---- LOSS BAR ---- */
+.loss-bar-wrap {
+  height: 3px; background: var(--bg3); border-radius: 2px;
+  margin-top: 6px; overflow: hidden; width: 100%;
+}
+.loss-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+
+/* ---- AI PANEL HEADER ---- */
+.ai-panel-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 12px; gap: 12px;
+}
+.clear-chat-btn {
+  padding: 4px 10px; font-size: 11px; white-space: nowrap;
+  background: transparent; border: 1px solid var(--border2);
+  border-radius: var(--radius); color: var(--text3);
+  cursor: pointer; transition: all var(--ease); flex-shrink: 0; margin-top: 4px;
+}
+.clear-chat-btn:hover { border-color: var(--red); color: var(--red); }
+
+/* ---- CHAT CHIPS ---- */
+.chat-chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 10px 0 4px; border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+.chip {
+  padding: 5px 11px; font-size: 11px; font-weight: 500;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 20px; color: var(--text2);
+  cursor: pointer; transition: all var(--ease); white-space: nowrap;
+  font-family: var(--font);
+}
+.chip:hover { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+
+/* ---- CHAT COUNTER ---- */
+.chat-counter {
+  font-size: 10px; color: var(--text3); font-family: var(--mono);
+  text-align: right; padding: 3px 0 0; margin-top: 2px;
+}
+
+/* ---- MESSAGE COPY BUTTON ---- */
+.msg-bubble { position: relative; }
+.msg-copy {
+  position: absolute; top: 6px; right: 6px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 4px; color: var(--text3); font-size: 11px;
+  padding: 2px 6px; cursor: pointer; opacity: 0;
+  transition: opacity var(--ease); line-height: 1;
+}
+.msg:hover .msg-copy { opacity: 1; }
+.msg-copy:hover { color: var(--text); border-color: var(--text3); }
+
+/* ---- REFRESH BUTTON ---- */
+.refresh-btn {
+  padding: 5px 12px; font-size: 11px; font-weight: 500;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: var(--radius); color: var(--text2);
+  cursor: pointer; transition: all var(--ease); font-family: var(--font);
+  display: flex; align-items: center; gap: 6px;
+}
+.refresh-btn:hover { border-color: var(--green); color: var(--green); }
+.refresh-btn.spinning svg { animation: spin 0.6s linear; }
+
+/* ================================================================
+   NEW PREMIUM COMPONENT STYLES — v2.0
+   ================================================================ */
+
+/* ---- PAGE HEADER ROW ---- */
+.page-header-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 20px; gap: 12px;
+}
+.page-header-row .page-sub { margin-bottom: 0; }
+
+/* ---- HEADER CENTER (alert pill) ---- */
+.header-center { display: flex; align-items: center; }
+.header-alert-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--red-dim); border: 1px solid rgba(224,82,82,0.25);
+  padding: 5px 12px; border-radius: 20px; font-size: 11px;
+  color: var(--red); cursor: pointer; font-weight: 500;
+}
+.header-alert-pill:hover { background: rgba(224,82,82,0.18); }
+
+/* ---- HEADER CLOCK ---- */
+.header-clock { font-size: 11px; color: var(--text2); white-space: nowrap; }
+@media (max-width: 600px) { .header-clock { display: none; } }
+
+/* ---- METRIC CARD ICON ---- */
+.metric-card-icon {
+  position: absolute; top: 14px; right: 14px; opacity: 0.22;
+  transition: opacity var(--ease); pointer-events: none;
+}
+.metric-card:hover .metric-card-icon { opacity: 0.4; }
+
+/* ---- NAV LABEL / ALERT BADGE / FOOTER ---- */
+.nav-label { flex: 1; }
+.nav-alert-badge {
+  margin-left: auto; min-width: 18px; height: 18px;
+  background: var(--red); color: #fff; border-radius: 9px;
+  font-size: 9px; font-weight: 700; font-family: var(--mono);
+  display: flex; align-items: center; justify-content: center; padding: 0 5px;
+}
+.nav-footer {
+  margin: 12px 8px 4px; padding: 10px 12px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); display: flex; gap: 16px;
+}
+.nav-footer-stat { display: flex; flex-direction: column; gap: 2px; align-items: center; flex: 1; }
+
+/* ---- INVENTORY COUNT BADGE ---- */
+.inv-count-badge {
+  font-size: 11px; color: var(--text3); font-family: var(--mono);
+  background: var(--bg3); border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 20px; white-space: nowrap; align-self: center;
+}
+
+/* ---- SEARCH WITH ICON ---- */
+.inv-search-wrap { position: relative; }
+.inv-search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--text3); pointer-events: none; display: flex;
+}
+.inv-search { padding-left: 34px !important; }
+
+/* ---- CATEGORY PILL COUNT ---- */
+.cat-pill-count {
+  display: inline-block; margin-left: 4px; font-size: 9px;
+  font-family: var(--mono); background: rgba(255,255,255,0.08);
+  padding: 1px 5px; border-radius: 8px;
+}
+.cat-pill.active .cat-pill-count { background: rgba(29,181,132,0.2); }
+
+/* ---- CATEGORY TAG (table cell) ---- */
+.cat-tag {
+  display: inline-block; font-size: 10px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  color: var(--text2); padding: 2px 8px; border-radius: 10px;
+}
+
+/* ---- TABLE EMPTY STATE ---- */
+.table-empty-state {
+  text-align: center; padding: 48px 20px !important;
+  color: var(--text3); font-size: 13px;
+}
+
+/* ---- CRITICAL ROW GLOW ---- */
+.row-critical td { background: rgba(224,82,82,0.04) !important; }
+.row-critical:hover td { background: rgba(224,82,82,0.08) !important; }
+
+/* ---- FORECAST MODEL BADGE ---- */
+.forecast-model-badge {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--purple); background: var(--purple-dim);
+  border: 1px solid rgba(155,114,232,0.2);
+  padding: 5px 12px; border-radius: 20px;
+  align-self: flex-start; font-family: var(--mono);
+}
+
+/* ---- FORECAST SUMMARY CARDS ---- */
+.forecast-summary-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px; margin: 18px 0;
+}
+@media (max-width: 600px) { .forecast-summary-grid { grid-template-columns: 1fr; } }
+.fc-summary-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-top: 2px solid transparent; border-radius: var(--radius-lg);
+  padding: 14px 16px; animation: fadeIn 0.4s ease both;
+}
+.fc-summary-card.accent-green { border-top-color: var(--green); }
+.fc-summary-card.accent-blue  { border-top-color: var(--blue);  }
+.fc-summary-card.accent-amber { border-top-color: var(--amber); }
+.fc-summary-card.accent-red   { border-top-color: var(--red);   }
+.fc-summary-val {
+  font-size: 26px; font-weight: 600; font-family: var(--mono);
+  color: var(--text); letter-spacing: -0.5px; margin-bottom: 4px;
+}
+.fc-summary-lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
+.fc-summary-sub { font-size: 11px; color: var(--text2); margin-top: 5px; font-family: var(--mono); }
+
+/* ---- CONFIDENCE BAR ---- */
+.confidence-wrap { margin-top: 4px; }
+.confidence-bar-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.confidence-bar-bg { height: 6px; background: var(--bg3); border-radius: 10px; overflow: hidden; }
+.confidence-bar-fill {
+  height: 100%; border-radius: 10px;
+  background: linear-gradient(90deg, var(--green), var(--green-l));
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---- LOSS SUMMARY ROWS ---- */
+.loss-summary-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 0; border-bottom: 1px solid var(--border);
+  font-size: 13px; color: var(--text2);
+}
+.loss-summary-row:last-child { border-bottom: none; }
+.loss-warning-box {
+  margin-top: 14px; padding: 10px 12px;
+  background: var(--amber-dim); border-left: 3px solid var(--amber);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 12px; color: var(--amber); line-height: 1.5;
+}
+.loss-ok-box {
+  margin-top: 14px; padding: 10px 12px;
+  background: var(--green-dim); border-left: 3px solid var(--green);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 12px; color: var(--green); line-height: 1.5;
+}
+
+/* ---- SUMMARY PILLS (loss page) ---- */
+.summary-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 700; font-family: var(--mono);
+  padding: 4px 10px; border-radius: 20px; margin-left: 6px;
+}
+.summary-pill.pill-profit { background: var(--green-dim); color: var(--green); }
+.summary-pill.pill-loss   { background: var(--red-dim);   color: var(--red); }
+
+/* ---- TABLE ROW ANIMATIONS ---- */
+.data-table tbody tr { animation: fadeIn 0.3s ease both; }
+
